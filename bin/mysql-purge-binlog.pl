@@ -26,16 +26,16 @@ my $pw = "binlog";
 sub main {
     # inquiry slave's log position
     my $s_dbh = DBI->connect($s_dsn, $user, $pw)
-        or die DBI::errstr;
+        or die $DBI::errstr;
     my @ary = $s_dbh->selectrow_array('SHOW SLAVE STATUS')
         or die $s_dbh->errstr;
     my $binlog_filename = $ary[5];
 
     # purge binlog(s) on master
     my $m_dbh = DBI->connect($m_dsn, $user, $pw)
-        or die DBI::errstr;
+        or die $DBI::errstr;
     my $rv = $m_dbh->do("PURGE BINARY LOGS TO '$binlog_filename'")
-        or die m_dbh->errstr;
+        or die $m_dbh->errstr;
     if ($rv > 0) {
         die "Error while purging binlog(s) on master!";
     }
